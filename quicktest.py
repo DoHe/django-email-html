@@ -85,10 +85,11 @@ class QuickDjangoTest(object):
 
     def get_custom_settings(self):
         try:
-            from settings_test import *
-            settings_test = dict(locals())
-            del settings_test['self']
+            import settings_test as imported_settings
+            settings_test = dict((key, getattr(imported_settings, key)) for key in dir(imported_settings)
+                                 if not key.startswith('__'))
             if 'INSTALLED_APPS' in settings_test:
+                INSTALLED_APPS = settings_test['INSTALLED_APPS']
                 del settings_test['INSTALLED_APPS']
         except ImportError:
             settings_test = {}
